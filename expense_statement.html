@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="asset/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #list{
+        text-align: center;
+      }
+      li{
+        margin-top: 5px;
+      }
+      .pie {
+        --w: 150px;
+
+        width: var(--w);
+        aspect-ratio: 1;
+        position: fixed;
+        left: 10%;
+        top: 11%;
+        display: inline-grid;
+        place-content: center;
+        margin: 5px;
+        width: 78%;
+      }
+      .pie:before {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        inset: 0;
+        background: conic-gradient(var(--c) calc(var(--p) * 1%), #0000 0);
+        -webkit-mask: radial-gradient(
+          farthest-side,
+          #0000 calc(99% - var(--b)),
+          #000 calc(100% - var(--b))
+        );
+        mask: radial-gradient(
+          farthest-side,
+          #0000 calc(99% - var(--b)),
+          #000 calc(100% - var(--b))
+        );
+      }
+      /* pasta grafiği bölümlerinin özellikleri */
+      #sixth {
+        --p: 0;
+        --b: 40px;
+        --c: #C1BBA8;
+      }
+      #fifth {
+        --p: 0;
+        --b: 40px;
+        --c: #F59914;
+      }
+      #fourth {
+        --p: 0;
+        --b: 40px;
+        --c: #F5D41E;
+      }
+      #third {
+        --p: 0;
+        --b: 40px;
+        --c: #1CE882;
+      }
+      #second {
+        --p: 0;
+        --b: 40px;
+        --c: #00A7FF;
+      }
+      #first {
+        --p: 0;
+        --b: 40px;
+        --c: #005D8E;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="navbar-item">
+        <a href="main.html">
+          <i class="fas fa-home fa-lg" style="color: #ffffff"></i
+        ></a>
+      </div>
+      <div class="navbar-item main-menu">Expense Statement</div>
+      <div class="navbar-item">
+        <button onclick="autoSave()
+            ipcRenderer.send('key:close')">
+          <i class="fas fa-times-circle fa-lg" style="color: #ffffff"></i>
+        </button>
+      </div>
+    </div>
+    <!-- pasta grafiği -->
+    <div id="piechart">
+      <div id="sixth" class="pie"></div>
+      <div id="fifth" class="pie"></div>
+      <div id="fourth" class="pie"></div>
+      <div id="third" class="pie"></div>
+      <div id="second" class="pie"></div>
+      <div id="first" class="pie"></div>
+      <!-- harcama listesi -->
+      <div style="top: 35%; right: 30%; position: fixed;">
+        <ul style="list-style-type: none; font-weight: bold; cursor:default;" id="list">
+          <li>
+            <span style="color: #005D8E;">■</span>
+            <span id="bills"></span>
+            <span style="color: #005D8E;">■</span>
+          </li>
+
+          <li>
+            <span style="color: #00A7FF;">■</span>
+            <span id="food"></span>
+            <span style="color: #00A7FF;">■</span>
+          </li>
+
+          <li>
+            <span style="color: #1CE882;">■</span>
+            <span id="electronic"></span>
+            <span style="color: #1CE882;">■</span>
+          </li>
+
+          <li>
+            <span style="color: #F5D41E;">■</span>
+            <span id="shopping"></span>
+            <span style="color: #F5D41E;">■</span>
+          </li>
+
+          <li>
+            <span style="color: #F59914;">■</span>
+            <span id="transport"></span>
+            <span style="color: #F59914;">■</span>
+          </li>
+
+          <li>
+            <span style="color: #C1BBA8;">■</span>
+            <span id="other"></span>
+            <span style="color: #C1BBA8;">■</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <footer
+      style="
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      "
+    >
+      <div class="progress" style="margin-bottom: -20px; height: 30px;">
+        <!-- Progress barın altına boşluk eklendi -->
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="69"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 69%"
+          id="pbar"
+        >
+        </div>
+      </div>
+    </footer>
+    <script>
+      const electron = require("electron");
+      const { ipcRenderer } = electron;
+    </script>
+    <script>
+      const fs = require("fs");
+      const data = JSON.parse(fs.readFileSync("harcamalar.json", "utf8"))
+
+      //harcama listesini hazırlıyor
+      document.getElementById("bills").innerHTML = "Bill Expense: " + data.Bills + " TL";
+      document.getElementById("food").innerHTML = "Food Expense: " + data.Food + " TL";
+      document.getElementById("electronic").innerHTML = "Electronic Expense: " + data.Electronics + " TL";
+      document.getElementById("shopping").innerHTML = "Shopping Expense: " + data.Shopping + " TL";
+      document.getElementById("transport").innerHTML = "Transport Expense: " + data.Transport + " TL";
+      document.getElementById("other").innerHTML = "Other Expenses: " + data.Other + " TL";
+
+      var newJSON = JSON.stringify(data);
+
+      //girilen sayırlara göre pasta grafiğinin derecelerini ayarlıyor
+      function setDegrees(firstE, secondE, thirdE, fourthE, fifthE, sixthE){
+        //girdilerin toplamını alıyor
+        let total = firstE + secondE + thirdE + fourthE + fifthE + sixthE;
+        //toplam sıfırsa diğer harcamaların değerini 100 yapıyor
+        if(total == 0) {
+          sixth.style.setProperty('--p', '100');
+        }
+        //toplam sıfır değilse dereceleri ayarlıyor
+        else {
+          first.style.setProperty('--p', (firstE / total) * 100 + '');
+          second.style.setProperty('--p', (secondE / total) * 100 + '');
+          third.style.setProperty('--p', (thirdE / total) * 100 + '');
+          fourth.style.setProperty('--p', (fourthE / total) * 100 + '');
+          fifth.style.setProperty('--p', (fifthE / total) * 100 + '');
+          sixth.style.setProperty('--p', (sixthE / total) * 100 + '');
+        }
+      }
+
+
+      var first = document.getElementById("first");
+      var second = document.getElementById("second");
+      var third = document.getElementById("third");
+      var fourth = document.getElementById("fourth");
+      var fifth = document.getElementById("fifth");
+      var sixth = document.getElementById("sixth");
+
+      //json dosyasındaki verilere göre dereceleri ayarlıyor
+      setDegrees(data.Bills, data.Food, data.Electronics, data.Shopping, data.Transport, data.Other)
+
+      //dereceler ayarlandıktan sonra grafiği çiziyor
+      drawChart();
+
+      //grafiği çiziyor
+      function drawChart(){
+        //grafik elementlerinin style verilerini çekiyor
+        var firstCS =  window.getComputedStyle(first);
+        var secondCS = window.getComputedStyle(second);
+        var thirdCS =  window.getComputedStyle(third);
+        var fourthCS = window.getComputedStyle(fourth);
+        var fifthCS =  window.getComputedStyle(fifth);
+        var sixthCS =  window.getComputedStyle(sixth);  
+
+        //çekiler style verilerinden kapladıkları dereceleri hesaplıyor
+        var firstVal = (firstCS.getPropertyValue('--p')) * 3.6;
+        var secondVal = (secondCS.getPropertyValue('--p')) * 3.6;
+        var thirdVal = (thirdCS.getPropertyValue('--p')) * 3.6;
+        var fourthVal = (fourthCS.getPropertyValue('--p')) * 3.6;
+        var fifthVal = (fifthCS.getPropertyValue('--p')) * 3.6;
+        var sixthVal = (sixthCS.getPropertyValue('--p')) * 3.6;
+
+        //grafik parçalarının kendinden önceki parçaya göre dönecekleri deereceyi hesaplıyor
+        let secondRot = firstVal;
+        let thirdRot = secondRot + secondVal;
+        let fourthRot = thirdRot + thirdVal;
+        let fifthRot = fourthRot + fourthVal;
+        let sixthRot = fifthRot + fifthVal;
+
+        //hesaplanan derecelere göre parçaları döndürüyor
+        second.style.transform = 'rotate('+secondRot+'deg)';
+        third.style.transform = 'rotate('+thirdRot+'deg)';
+        fourth.style.transform = 'rotate('+fourthRot+'deg)';
+        fifth.style.transform = 'rotate('+fifthRot+'deg)';
+        sixth.style.transform = 'rotate('+sixthRot+'deg)';
+      }
+
+      //harcama listesi elemanlarının üstüne gelindiğinde 
+      //alakalı grafik parçasını belirginleştiriyor
+      document.getElementById("bills").addEventListener("mouseover", () => {
+        first.style.setProperty("--b", "70px");
+      });
+      document.getElementById("bills").addEventListener("mouseout", () => {
+        first.style.setProperty("--b", "40px");
+      });
+      document.getElementById("food").addEventListener("mouseover", () => {
+        second.style.setProperty("--b", "70px");
+      });
+      document.getElementById("food").addEventListener("mouseout", () => {
+        second.style.setProperty("--b", "40px");
+      });
+      document.getElementById("electronic").addEventListener("mouseover", () => {
+        third.style.setProperty("--b", "70px");
+      });
+      document.getElementById("electronic").addEventListener("mouseout", () => {
+        third.style.setProperty("--b", "40px");
+      });
+      document.getElementById("shopping").addEventListener("mouseover", () => {
+        fourth.style.setProperty("--b", "70px");
+      });
+      document.getElementById("shopping").addEventListener("mouseout", () => {
+        fourth.style.setProperty("--b", "40px");
+      });
+      document.getElementById("transport").addEventListener("mouseover", () => {
+        fifth.style.setProperty("--b", "70px");
+      });
+      document.getElementById("transport").addEventListener("mouseout", () => {
+        fifth.style.setProperty("--b", "40px");
+      });
+      document.getElementById("other").addEventListener("mouseover", () => {
+        sixth.style.setProperty("--b", "70px");
+      });
+      document.getElementById("other").addEventListener("mouseout", () => {
+        sixth.style.setProperty("--b", "40px");
+      });
+      
+    </script>
+    <script src="./pbar.js"></script>
+    <script src="autoSave.js"></script>
+  </body>
+</html>

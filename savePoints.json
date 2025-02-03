@@ -1,0 +1,271 @@
+{
+  "savePoints": [
+    {
+      "name": "reset",
+      "wishlist": {
+        "wishlist": []
+      },
+      "saving": {
+        "TRY": 0,
+        "USD": 0,
+        "EUR": 0,
+        "GOLD": 0,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 0,
+        "Food": 0,
+        "Shopping": 0,
+        "Electronics": 0,
+        "Transport": 0,
+        "Other": 0
+      }
+    },
+    {
+      "name": "adanalı",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "örnek",
+            "price": 45000
+          },
+          {
+            "name": "ıygkjhb",
+            "price": 48
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 1554330.7600000002,
+        "USD": 153,
+        "EUR": 43,
+        "GOLD": 15,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 658,
+        "Food": 135000,
+        "Shopping": 0,
+        "Electronics": 1400753,
+        "Transport": 2585,
+        "Other": 0
+      }
+    },
+    {
+      "name": "sivaslı",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "istek1",
+            "price": 1234
+          },
+          {
+            "name": "istek2",
+            "price": 4321
+          },
+          {
+            "name": "istek3",
+            "price": 1111
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 67906.79999999999,
+        "USD": 100,
+        "EUR": 50,
+        "GOLD": 0,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 9123,
+        "Food": 9145,
+        "Shopping": 9321,
+        "Electronics": 17667,
+        "Transport": 10500,
+        "Other": 9234
+      }
+    },
+    {
+      "name": "maraşlı",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "istek1",
+            "price": 1234
+          },
+          {
+            "name": "istek2",
+            "price": 4321
+          },
+          {
+            "name": "istek3",
+            "price": 1111
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 67906.79999999999,
+        "USD": 100,
+        "EUR": 50,
+        "GOLD": 0,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 9123,
+        "Food": 9145,
+        "Shopping": 9321,
+        "Electronics": 17667,
+        "Transport": 10500,
+        "Other": 9234
+      }
+    },
+    {
+      "name": "bergamalı_35",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "istek1",
+            "price": 1234
+          },
+          {
+            "name": "istek2",
+            "price": 4321
+          },
+          {
+            "name": "istek3",
+            "price": 1111
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 67906.79999999999,
+        "USD": 100,
+        "EUR": 50,
+        "GOLD": 0,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 9123,
+        "Food": 9145,
+        "Shopping": 9321,
+        "Electronics": 17667,
+        "Transport": 10500,
+        "Other": 9234
+      }
+    }
+  ],
+  "autosaves": [
+    {
+      "name": "autosave12",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "örnek",
+            "price": 45000
+          },
+          {
+            "name": "ıygkjhb",
+            "price": 48
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 1555201.7600000002,
+        "USD": 153,
+        "EUR": 43,
+        "GOLD": 15,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 658,
+        "Food": 135000,
+        "Shopping": 0,
+        "Electronics": 1400753,
+        "Transport": 2585,
+        "Other": 0
+      }
+    },
+    {
+      "name": "autosave13",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "örnek",
+            "price": 45000
+          },
+          {
+            "name": "ıygkjhb",
+            "price": 48
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 1555201.7600000002,
+        "USD": 153,
+        "EUR": 43,
+        "GOLD": 15,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 658,
+        "Food": 135000,
+        "Shopping": 0,
+        "Electronics": 1400753,
+        "Transport": 2585,
+        "Other": 0
+      }
+    },
+    {
+      "name": "autosave14",
+      "wishlist": {
+        "wishlist": [
+          {
+            "name": "örnek",
+            "price": 45000
+          },
+          {
+            "name": "ıygkjhb",
+            "price": 48
+          }
+        ]
+      },
+      "saving": {
+        "TRY": 1554330.7600000002,
+        "USD": 153,
+        "EUR": 43,
+        "GOLD": 15,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 658,
+        "Food": 135000,
+        "Shopping": 0,
+        "Electronics": 1400753,
+        "Transport": 2585,
+        "Other": 0
+      }
+    },
+    {
+      "name": "autosave15",
+      "wishlist": {
+        "wishlist": []
+      },
+      "saving": {
+        "TRY": 0,
+        "USD": 0,
+        "EUR": 0,
+        "GOLD": 0,
+        "total": 0
+      },
+      "harcamalar": {
+        "Bills": 0,
+        "Food": 0,
+        "Shopping": 0,
+        "Electronics": 0,
+        "Transport": 0,
+        "Other": 0
+      }
+    }
+  ],
+  "autosaveIndex": 16
+}

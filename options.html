@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="asset/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      hr{
+        width: 100%; 
+        border: 0.5px solid#333;
+        margin-top:20px;
+        margin-left: -20px;
+      }
+      .listE{
+        margin-bottom: -40px;
+      }
+    </style>
+</head>
+<body>
+    <div class="navbar" style="position: fixed;">
+        <div class="navbar-item">
+          <a href="main.html">
+            <i class="fas fa-home fa-lg" style="color: #ffffff"></i
+          ></a>
+        </div>
+        <div class="navbar-item main-menu">Options</div>
+        <div class="navbar-item">
+            <button onclick="autoSave()
+                ipcRenderer.send('key:close')">
+                <i class="fas fa-times-circle fa-lg" style="color: #ffffff"></i>
+            </button>
+        </div>
+    </div>
+    <br><br>
+    <br>
+    <div style="margin-left: 15%;">
+        <!-- uygulamadaki verileri sıfırlama tuşu -->
+        <button onclick="loadSave(0)">Reset</button>    
+            <!-- save almak için isim girişi -->
+            <input type="text" id="saveName"> 
+        <!-- save alma tuşu -->
+        <button onclick="save()">Save</button>
+    </div>
+    <!-- alınan save ve autosavelerin listesi -->
+    <ul id="saves">
+
+    </ul>
+    <script>
+        const electron = require("electron");
+        const { ipcRenderer } = electron;
+        const fs = require("fs")
+
+        //save alıyor
+        function save(){
+            const saveName = document.getElementById("saveName").value
+            //save adının boş olup olmadığını kontrol ediyor
+            if(saveName != ""){
+                const data = JSON.parse(fs.readFileSync("savePoints.json", "utf8"))
+                //o andaki verileri çekiyor
+                const listData = JSON.parse(fs.readFileSync("list.json", "utf8"))
+                const savingData = JSON.parse(fs.readFileSync("saving.json", "utf8"))
+                const expenseData = JSON.parse(fs.readFileSync("harcamalar.json", "utf8"))
+                //savelere eklenecek datayı oluşturuyor
+                const newData = {
+                    "name": saveName,
+                    "wishlist": listData, 
+                    "saving": savingData, 
+                    "harcamalar": expenseData
+                }
+                //save'i diziye ekliyor
+                data.savePoints.push(newData)
+                fs.writeFileSync('savePoints.json', JSON.stringify(data, null, 2));
+                //listeyi yeniden yazdırıyor
+                list();
+            }
+        }
+
+        //verilen indexteki save'i yüklüyor
+        function loadSave(index){
+            const data = JSON.parse(fs.readFileSync("savePoints.json", "utf8"))
+            const listData = data.savePoints[index].wishlist;
+            //o indexteki wishlist verisini dosyaya yazdırıyor
+            fs.writeFileSync('list.json', JSON.stringify(listData, null, 2));
+
+            const savingData = data.savePoints[index].saving;
+            //o indexteki saving verisini dosyaya yazdırıyor
+            fs.writeFileSync('saving.json', JSON.stringify(savingData, null, 2));
+
+            const harcamalarData = data.savePoints[index].harcamalar;
+            //o indexteki harcama verisini dosyaya yazdırıyor
+            fs.writeFileSync('harcamalar.json', JSON.stringify(harcamalarData, null, 2));
+        }
+
+        //verilen indexteki autosave'i yüklüyor, loadSave ile aynı mantıkta
+        function loadAutosave(index){
+            const data = JSON.parse(fs.readFileSync("savePoints.json", "utf8"))
+
+            const listData = data.autosaves[index].wishlist;
+            fs.writeFileSync('list.json', JSON.stringify(listData, null, 2));
+
+            const savingData = data.autosaves[index].saving;
+            fs.writeFileSync('saving.json', JSON.stringify(savingData, null, 2));
+
+            const harcamalarData = data.autosaves[index].harcamalar;
+            fs.writeFileSync('harcamalar.json', JSON.stringify(harcamalarData, null, 2));
+        }
+
+        //json dosyasındaki saveleri listeliyor
+        function list(){
+            //save noktalarının verilerini çekiyor
+            const savePointsJson = JSON.parse(fs.readFileSync('savePoints.json', 'utf8'));
+
+            const saveList = document.getElementById("saves");
+            //yazdırılacak listeyi sıfırlıyor
+            saveList.innerHTML = "";
+
+            //saveleri sırayla yazdırıyor, 0. indexte resetleme save'i olduğundan 1. indexten başlıyor
+            for (let i = 1; i < savePointsJson.savePoints.length; i++) {
+                item = savePointsJson.savePoints[i]
+                const newItem = document.createElement('li');
+                //liste elemanları arasına çizgi oluşturuyor
+                const newHR = document.createElement('hr')
+                newHR.className = "listHR";
+                newItem.style.marginTop = '10px';
+                
+                //save adının olacağı span
+                const itemNameSpan = document.createElement('span');
+                itemNameSpan.className = 'listE';
+                itemNameSpan.textContent = item.name;
+
+                //save'i silme tuşu
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'listP';
+                deleteButton.addEventListener("click", () => {
+                    //listedeki konuma göre indexi buluyor
+                    const index = Array.from(saveList.getElementsByTagName("li")).indexOf(newItem) + 1;
+                    //bulduğu indexteki save'i siliyor
+                    savePointsJson.savePoints.splice(index, 1)
+                    //save'in silindiği veriyo json dosyasına yazdırıyor
+                    fs.writeFileSync("savePoints.json", JSON.stringify(savePointsJson, null, 2));
+                    //listeyi yeniden yazdırıyor
+                    list()
+                })
+                deleteButton.textContent = "delete"
+
+                //save yükleme tuşu
+                const loadButton = document.createElement('button');
+                loadButton.className = "listP"
+                loadButton.addEventListener("click", () => {
+                    //listedeki konuma göre indexi buluyor
+                    const index = Array.from(saveList.getElementsByTagName("li")).indexOf(newItem) + 1;
+                    //bulduğu indexteki save'i yüklüyor
+                    loadSave(index);
+                })
+                loadButton.textContent = "load"
+            
+                //yeni iteme alt elemanları ekliyor
+                newItem.appendChild(itemNameSpan);
+                newItem.appendChild(deleteButton);
+                newItem.appendChild(loadButton);
+                
+                //yeni itemi listeye ekliyor
+                saveList.appendChild(newItem);
+                saveList.appendChild(newHR)
+            }
+
+            //autosaveler için ayrı bölme açıyor
+            const autoItem = document.createElement('span')
+            autoItem.textContent = "Autosaves: "
+            saveList.appendChild(autoItem)
+            saveList.appendChild(document.createElement('hr'))
+
+            //autosaveleri sırayla yazdırıyor, save yazdırma döngüsüyle neredeyse aynı
+            for(let i = 0; i < savePointsJson.autosaves.length; i++){
+                const item = savePointsJson.autosaves[i]
+                const newItem = document.createElement('li');
+                const newHR = document.createElement('hr')
+                newHR.className = "listHR";
+                newItem.style.marginTop = '10px';
+                
+                const itemNameSpan = document.createElement('span');
+                itemNameSpan.className = 'listE';
+                itemNameSpan.textContent = item.name;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'listP';
+                deleteButton.addEventListener("click", () => {
+                    savePointsJson.autosaves.splice(i, 1)
+                    fs.writeFileSync("savePoints.json", JSON.stringify(savePointsJson, null, 2));
+                    list()
+                })
+                deleteButton.textContent = "delete"
+
+                const loadButton = document.createElement('button');
+                loadButton.className = "listP"
+                loadButton.addEventListener("click", () => {
+                    loadAutosave(i);
+                })
+                loadButton.textContent = "load"
+            
+                newItem.appendChild(itemNameSpan);
+                newItem.appendChild(deleteButton);
+                newItem.appendChild(loadButton);
+                
+                saveList.appendChild(newItem);
+                saveList.appendChild(newHR)
+            }
+        }
+
+        //sayfa açıldığında listeliyor
+        list();
+    </script>
+    <script src="autoSave.js"></script>
+</body>
+</html>

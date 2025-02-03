@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Investments</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="asset/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="navbar-item">
+        <a href="main.html">
+          <i class="fas fa-home fa-lg" style="color: #ffffff"></i
+        ></a>
+      </div>
+      <div class="navbar-item main-menu">Investments</div>
+      <div class="navbar-item">
+        <button
+          onclick="autoSave()
+          ipcRenderer.send('key:close')"
+        >
+          <i class="fas fa-times-circle fa-lg" style="color: #ffffff"></i>
+        </button>
+      </div>
+    </div>
+    <!-- döviz alım satım bölümü -->
+    <div>
+      <ul>
+        <li>
+          <p>
+            1 USD =
+            <!-- internetten çekilen değer -->
+            <span id="usd-try">1</span>
+            TRY
+          </p>
+          <!-- alış-satış miktarı girişi -->
+          <input type="text" id="usdValue" />
+          <br />
+          <!-- alış butonu -->
+          <button
+            onclick="sellBuy = ' added';
+              change(parseFloat(document.getElementById('usdValue').value), 'USD');
+              calculateInvestment()"
+          >
+            Add
+          </button>
+          <!-- satış butonu -->
+          <button
+            onclick="sellBuy = ' solded';
+              usdValue = parseFloat(document.getElementById('usdValue').value);
+              change(usdValue, 'USD');
+              setPBar()
+              calculateInvestment()"
+          >
+            Sell
+          </button>
+        </li>
+        <li>
+          <p>1 EUR = <span id="eur-try">1</span> TRY</p>
+          <input type="text" id="eurValue" />
+          <br />
+          <button
+            onclick="sellBuy = ' added';
+              change(parseFloat(document.getElementById('eurValue').value), 'EUR')
+              calculateInvestment()"
+          >
+            Add
+          </button>
+          <button
+            onclick="sellBuy = ' solded';
+              eurValue = parseFloat(document.getElementById('eurValue').value)
+              change(eurValue, 'EUR')
+              setPBar()
+              calculateInvestment()"
+          >
+            Sell
+          </button>
+        </li>
+        <li>
+          <p>1 Gram of Gold = <span id="gold-price">1</span> TRY</p>
+          <input type="text" id="goldValue" />
+          <br />
+          <button
+            onclick="sellBuy = ' added';
+              change(parseFloat(document.getElementById('goldValue').value), 'GOLD')
+              calculateInvestment()"
+          >
+            Add
+          </button>
+          <button
+            onclick="sellBuy = ' solded';
+              goldValue = parseFloat(document.getElementById('goldValue').value)
+              goldFirst = jsonData.GOLD;
+              change(goldValue, 'GOLD')
+              setPBar()
+              calculateInvestment()"
+          >
+            Sell
+          </button>
+        </li>
+      </ul>
+    </div>
+    <!-- eldeki birikimler -->
+    <div id="investments" style="text-align: center; font-weight: bold"></div>
+    <!-- işlem bildirimi -->
+    <div
+      id="notification"
+      style="
+        margin-left: 15px;
+        font-weight: bold;
+        bottom: 7%;
+        color: antiquewhite;
+        padding: 3px;
+        border-radius: 3px;
+        position: fixed;
+      "onclick="closeNot()"
+    ></div>
+    <footer
+      style="
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      "
+    >
+      <div class="progress" style="margin-bottom: -20px; height: 30px">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="69"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 69%"
+          id="pbar"
+        ></div>
+      </div>
+    </footer>
+    <script>
+      const fs = require("fs");
+      const electron = require("electron");
+      const { ipcRenderer } = electron;
+
+      var usdTryElement = document.getElementById("usd-try");
+      var eurTryElement = document.getElementById("eur-try");
+      var goldTryElement = document.getElementById("gold-price");
+
+      const investments = document.getElementById("investments");
+
+      const jsonData = JSON.parse(fs.readFileSync("saving.json", "utf8"));
+
+      //yapılan işlem (alış-satış)
+      var sellBuy = "";
+
+      getData("USD")
+      getData("EUR")
+      getData("GOLD")
+
+      //girilen birim tipine göre api'dan verileri çekip yazdırıyor
+      function getData(unit){
+        var data = null;
+        var gold = unit == "GOLD"
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        let link = "https://api.collectapi.com/economy/currencyToAll?int=1&base=" + unit
+        if(gold) link = "https://api.collectapi.com/economy/goldPrice"
+
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === this.DONE) {
+            if(gold){
+              var response = JSON.parse(this.responseText).result;
+                for(let i = 0; i < response.length; i++){
+                  if (response[i].name == "Gram Altın"){
+                    const goldPriceElement = document.getElementById("gold-price");
+                    goldPriceElement.innerHTML = parseFloat(response[i].buyingstr).toFixed(2);
+                  }
+                }
+            }
+            else{
+              const responseText = JSON.parse(this.responseText);
+              const tryRate = parseFloat(responseText.result.data.find((currency) => currency.code === "TRY").rate).toFixed(2);
+
+              switch(unit){
+                case "USD":
+                  usdTryElement.innerHTML = tryRate;
+                  break;
+                case "EUR":
+                  eurTryElement.innerHTML = tryRate;
+                  break;
+              }
+            }
+            calculateInvestment();
+          }
+        });
+
+        xhr.open("GET", link);
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.setRequestHeader("authorization", "apikey 4onK2NawX9JERNQk1CpRLY:6HJL7VD2YKQ94macVnw3hW");
+
+        xhr.send(data);
+      }
+
+      //bildirimi kapatıyor
+      function closeNot() {
+        notification = document.getElementById("notification");
+        notification.innerHTML = "";
+        notification.style.display = "none";
+      }
+
+      //girilen değeri, girilen tipteki yatırım tipine ekleyip json'a yazdırıyor
+      function change(newValue, type) {
+        //bildirim çıkıp çıkmayacağını tutan bool, satış durumunda kullanılacak id
+        var bool = true,
+          id = "";
+
+        //girilen değeri kontrol edip birime göre ekleme veya çıkarma yapıyor, sonucu döndürüyor
+        function addValue(unit) {
+          //ekleme tuşuna basıldıysa veriyi ekliyor
+          if (sellBuy == " added") unit += newValue;
+          //satış tuşuna basıldıysa ve yeterli birim varsa veriyi düşürüyor
+          else if (sellBuy == " solded" && unit >= newValue) {
+            unit -= newValue;
+          }
+          //iki koşul da sağlanmazsa hata veriyor
+          else {
+            notification.innerHTML =
+              "You don't have that many units in your account.";
+            notification.style.backgroundColor = "#ff0000";
+            notification.style.display = "block";
+            bool = false;
+          }
+          return unit;
+        }
+        notification = document.getElementById("notification");
+
+        //girilen değer 0'dan büyük mü diye kontrol ediyor
+        if (newValue >= 0) {
+          //girilen tipe göre ekleme-çıkarma yapıyor
+          switch (type) {
+            case "USD":
+              jsonData.USD = addValue(jsonData.USD);
+              id = "usd-try";
+              break;
+            case "EUR":
+              jsonData.EUR = addValue(jsonData.EUR);
+              id = "eur-try";
+              break;
+            case "GOLD":
+              jsonData.GOLD = addValue(jsonData.GOLD);
+              id = "gold-price";
+              break;
+            case "TRY":
+              jsonData.TRY += newValue;
+              bool = false;
+              break;
+            default:
+              return;
+          }
+          //bool doğruysa bildirim çıkarıyor
+          if (bool) {
+            notification.style.display = "block";
+            notification.innerHTML = newValue + " " + type + sellBuy;
+            notification.style.backgroundColor = "#009900";
+            //satış yapıldıysa birim değerini hesaplayıp elimizdeki tl'ye ekliyor
+            if (sellBuy == " solded")
+              change(
+                newValue * parseFloat(document.getElementById(id).innerHTML),
+                "TRY"
+              );
+          }
+        }
+
+        //yanlış girdi girildiyse uyarı veriyor
+        else {
+          notification.style.display = "block";
+          notification.innerHTML =
+            "Invalid amount entered. Please enter a positive number.";
+          notification.style.backgroundColor = "#ff0000";
+        }
+
+        const updatedJson = JSON.stringify(jsonData, null, 2);
+
+        fs.writeFileSync("saving.json", updatedJson, "utf8");
+      }
+
+      //eldeki yatırımları hesaplayıp yazdırıyor
+      function calculateInvestment() {
+        investments.innerHTML =
+          "Total investments: " +
+          (jsonData.TRY +
+            jsonData.USD * parseFloat(usdTryElement.innerHTML) +
+            jsonData.EUR * parseFloat(eurTryElement.innerHTML) +
+            jsonData.GOLD * parseFloat(goldTryElement.innerHTML)).toFixed(2) +
+          " TL<br> " +
+          jsonData.USD +
+          " Dollars (" +
+          (jsonData.USD * parseFloat(usdTryElement.innerHTML)).toFixed(2) +
+          " TL) : <br>" +
+          jsonData.EUR +
+          " Euros (" +
+          (jsonData.EUR * parseFloat(eurTryElement.innerHTML)).toFixed(2) +
+          " TL) : <br>" +
+          jsonData.GOLD +
+          " Grams of Gold (" +
+          (jsonData.GOLD * parseFloat(goldTryElement.innerHTML)).toFixed(2) +
+          " TL)";
+      }
+    </script>
+    <script src="./pbar.js"></script>
+    <script src="autoSave.js"></script>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="asset/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      hr{
+        width: 100%; 
+        border: 1px solid#333
+      }
+      li{
+        margin-top: 5px;
+      }
+      .listHR{
+        margin-left: -4%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar" style="position: fixed">
+      <div class="navbar-item">
+        <a href="main.html">
+          <i class="fas fa-home fa-lg" style="color: #ffffff"></i
+        ></a>
+      </div>
+      <div class="navbar-item main-menu">Wishlist</div>
+      <div class="navbar-item">
+        <button onclick="autoSave()
+            ipcRenderer.send('key:close')">
+          <i class="fas fa-times-circle fa-lg" style="color: #ffffff"></i>
+        </button>
+      </div>
+    </div>
+    <!-- isteklerin yazıldığı liste -->
+    <div id="istekListesi">
+      <br /><br />
+      <ul id="wishlist">
+      </ul>
+    </div>
+    <!-- istek ekleme bölümü -->
+    <div
+      id="istekEkleme"
+      style="
+        height: 25%;
+        width: 100%;
+        position: fixed;
+        bottom: 30px;
+        background-color: #EDDFC4;
+        font-weight: bold;
+        padding: 20px;
+      "
+    >
+      <hr style="
+      margin-top: -20px; " />
+      <!-- istek adı -->
+      Wish: <input type="text" id="productName" style="margin-left: 14%; width: 50%" />
+      <br /><br />
+      <!-- istek fiyatı -->
+      Price: <input type="text" id="productPrice" style="margin-left: 14%" /> <br />
+      <!-- istek ekleme tuşu, tıklandığında yeni istek fiyatı
+          toplamına göre progress barı yeniden hazırlıyor -->
+      <button onclick="addItem(); setPBar()" style="width: 75px; height: 30px; margin-left: 85%">Add</button>
+    </div>
+    <footer
+      style="
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      "
+    >
+      <div class="progress" style="margin-bottom: -10px; height: 30px">
+        <!-- Progress barın altına boşluk eklendi -->
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 0%"
+          id="pbar"
+        >
+          Hedef : 69/100(%69)
+        </div>
+      </div>
+    </footer>
+    <script>
+      const electron = require("electron");
+      const { ipcRenderer } = electron;
+      const fs = require("fs");
+
+      //json dosyasına yeni istek ekliyor
+      function addWish(name, price){
+
+        const data = fs.readFileSync("list.json", "utf8");
+        const jsonData = JSON.parse(data);
+
+        //eklenecek istek datasını hazırlıyor
+        const newData = {"name": name, "price": price}
+
+        //datayı istek dizisine ekliyor
+        jsonData.wishlist.push(newData)
+
+        //dosyanın yeni halini jsona yazdırıyor
+        fs.writeFileSync("list.json", JSON.stringify(jsonData, null, 2), "utf8");
+
+      }
+
+      //verileri girilen isteği ekliyor
+      function addItem() {
+        // İstek ve Ücret alanlarındaki değerleri alıyor
+        const productName = document.getElementById('productName').value;
+        const productPrice = document.getElementById('productPrice').value;
+        
+        // Eğer her iki alan da doluysa ve ücret sıfırdan büyükse yeni isteği ekliyor
+        if (productName && productPrice > 0) {
+          addWish(productName, parseFloat(productPrice));
+          list()
+        }
+        
+      }
+
+      //istek listesini yazdırıyor
+      function list(){
+
+        const wishlistJson = JSON.parse(fs.readFileSync('list.json', 'utf8'));
+
+        //yazdırılacak listeyi çekiyor
+        const wishlistElement = document.getElementById("wishlist");
+        //listeyi sıfırlıyor
+        wishlistElement.innerHTML = "";
+
+        for (const item of wishlistJson.wishlist) {
+          const newItem = document.createElement('li');
+          const newHR = document.createElement('hr')
+          newHR.className = "listHR";
+          newItem.style.marginTop = '10px';
+          
+          //eklenecek isteğin adını yazdırıyor
+          const itemNameSpan = document.createElement('span');
+          itemNameSpan.className = 'listE';
+          itemNameSpan.textContent = item.name;
+          
+          //eklenecek isteğin fiyatını yazdırıyor
+          const itemPriceSpan = document.createElement('span');
+          itemPriceSpan.className = 'listP';
+          itemPriceSpan.textContent = item.price + ' TL';
+
+          //isteği silmek için button oluşturuyor
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'listP';
+          deleteButton.addEventListener("click", () => {
+            //silinecek isteğin indexini liste sırasına göre belirliyor
+            const index = Array.from(wishlistElement.getElementsByTagName("li")).indexOf(newItem);
+            //listeden elemanı çıkarıyor
+            wishlistJson.wishlist.splice(index, 1)
+            fs.writeFileSync("list.json", JSON.stringify(wishlistJson, null, 2));
+            setPBar();
+            list();
+          })
+          deleteButton.textContent = "delete"
+          
+          newItem.appendChild(itemNameSpan);
+          newItem.appendChild(deleteButton);
+          newItem.appendChild(itemPriceSpan);
+          
+          wishlist.appendChild(newItem);
+          wishlist.appendChild(newHR)
+        }
+      }
+
+      //listeyi yazdırıyor
+      list();
+      
+    </script>
+    <script src="./pbar.js"></script>
+    <script src="autoSave.js"></script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #B29279;
+  padding: 10px 20px;
+  color: white;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.navbar-item button{
+  width: 40px;
+  height: 30px;
+  cursor: pointer; 
+  background-color: #B29279; 
+  border: none
+}
+
+.listP {
+  float: right;
+  margin-right: 5%;
+}
+
+.listE {
+  float: left;
+}
+
+.navbar-item {
+  margin: 0 5px;
+}
+
+.main-menu {
+  font-weight: bold;
+}
+
+button{
+  background-color: #CFA084;
+  border-radius: 5px;
+  color: white;
+  border: 0;
+  height: 40px;
+  width: 98px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* Sayfa yüksekliği kadar genişlik */
+}
+
+.button-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  /* Satırlar arasında boşluk bırakmak için */
+}
+
+.button-space {
+  flex: 1; /* Butonlar arasında esneklik sağlar, boşluk oluşturur */
+  margin: 0 41.5px; /* Butonlar arasında yatay boşluk bırakmak için */
+}
+.main-button {
+  background-color: #CFA084;
+  color: white;
+  height: 70px;
+  width: 100px;
+  border-radius: 10px;
+  width: 30vw;
+  height: 20vh;
+}
+/* Temel stillendirme */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #EDDFC4
+}

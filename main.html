@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Income And Expense</title>
+    <link rel="stylesheet" href="asset/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <!-- ana menü tuşu -->
+      <div class="navbar-item">
+        <a href="main.html">
+          <i class="fas fa-home fa-lg" style="color: #ffffff"></i
+        ></a>
+      </div>
+      <div class="navbar-item main-menu">Main Menu</div>
+      <!-- kapatma tuşu -->
+      <div class="navbar-item">
+        <button onclick="autoSave()
+            ipcRenderer.send('key:close')">
+          <i class="fas fa-times-circle fa-lg" style="color: #ffffff"></i>
+        </button>
+      </div>
+    </div>
+    <!-- menü tuşları -->
+    <div class="button-container">
+      <div class="button-row">
+        <a href="income_entry.html"><button id="open_new_btn1" class="main-button">Income Entry</button></a>
+      <div class="button-space"></div>
+        <a href="expense_entry.html"><button id="open_new_btn2" class="main-button">Expense Entry</button></a>
+      </div>
+      <div class="button-row">
+        <a href="investments.html"><button id="open_new_btn3" class="main-button">Investments</button></a>
+        <div class="button-space"></div>
+        <a href="expense_statement.html"><button id="open_new_btn4" class="main-button">Expense Statement</button></a>
+      </div>
+      <div class="button-row">
+        <a href="wish_list.html"><button id="open_new_btn5" class="main-button">Wishlist</button></a>
+        <div class="button-space"></div>
+        <a href="options.html"><button id="open_new_btn5" class="main-button">Options</button></a>
+      </div>
+    </div>
+
+    <!-- progress bar -->
+    <footer
+      style="
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      "
+    >
+      <div class="progress" style="margin-bottom: -20px; height: 30px;">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 0%"
+          id="pbar"
+        >
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const electron = require("electron");
+      const { ipcRenderer } = electron;
+      const fs = require("fs");
+    </script>
+    <!-- progress barı hazırlayan js dosyasını ekliyor -->
+    <script src="./pbar.js"></script>
+    <!-- otomatik save fonksiyonunu ekliyor -->
+    <script src="autoSave.js"></script>
+  </body>
+</html>

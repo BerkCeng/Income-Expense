@@ -1,0 +1,17 @@
+{
+  "name": "income_and_expense",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^30.0.1"
+  },
+  "dependencies": {
+    "firebase": "^10.12.0"
+  }
+}

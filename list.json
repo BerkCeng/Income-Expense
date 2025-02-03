@@ -1,0 +1,16 @@
+{
+  "wishlist": [
+    {
+      "name": "istek1",
+      "price": 1234
+    },
+    {
+      "name": "istek2",
+      "price": 4321
+    },
+    {
+      "name": "istek3",
+      "price": 1111
+    }
+  ]
+}
